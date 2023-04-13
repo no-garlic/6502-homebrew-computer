@@ -1,5 +1,5 @@
 
-#define PIN_CLOCK 2   // Interrupt 0
+#define PIN_CLOCK 2
 #define PIN_RESET 3   // Interrupt 1
 #define PIN_SEG_A 7
 #define PIN_SEG_B 8
@@ -46,6 +46,8 @@ const int DIGITS[] = { CFG_0, CFG_1, CFG_2, CFG_3, CFG_4, CFG_5, CFG_6, CFG_7, C
 
 
 int m_FrameCount = 0;
+int m_ClockValue = 0;
+
 
 // common cathode
 int SEGMENT_LED_ON  = LOW;
@@ -56,130 +58,142 @@ int COMMON_LED_OFF  = LOW;
 
 void setup() 
 {
-  for (int i = PIN_SEG_START; i <= PIN_SEG_END; ++i)
-  {
-    pinMode(i, OUTPUT);
-    digitalWrite(i, SEGMENT_LED_OFF);
-  }
+    for (int i = PIN_SEG_START; i <= PIN_SEG_END; ++i)
+    {
+        pinMode(i, OUTPUT);
+        digitalWrite(i, SEGMENT_LED_OFF);
+    }
 
-  for (int i = PIN_DIGIT_START; i <= PIN_DIGIT_END; ++i)
-  {
-      pinMode(i, OUTPUT);
-  }
+    for (int i = PIN_DIGIT_START; i <= PIN_DIGIT_END; ++i)
+    {
+        pinMode(i, OUTPUT);
+    }
+    
+    pinMode(PIN_CLOCK, INPUT);
+    m_ClockValue = digitalRead(PIN_CLOCK);
 
-  attachInterrupt(digitalPinToInterrupt(PIN_CLOCK), OnClock, RISING);
-  attachInterrupt(digitalPinToInterrupt(PIN_RESET), OnReset, RISING);
+    attachInterrupt(digitalPinToInterrupt(PIN_RESET), OnReset, RISING);
 
-  Serial.begin(57600);
+    Serial.begin(57600);
 }
 
 
 void OnClock()
 {
-  m_FrameCount++;
+    m_FrameCount++;
 
-  char buffer[32];
-  sprintf(buffer, "Frame %i", m_FrameCount);
-
-  Serial.println(buffer);
+    char buffer[32];
+    sprintf(buffer, "Frame %i", m_FrameCount);
+    Serial.println(buffer);
 }
 
 
 void OnReset()
 {
-  m_FrameCount = 0;
+    m_FrameCount = 0;
 
-  Serial.println("Reset");
+    Serial.println("Reset");
 }
 
 
 void DisplayDigit(int number, int digit)
 {
-  int segmentMask = DIGITS[number];
-  
-  for (int i = PIN_DIGIT_START; i <= PIN_DIGIT_END; ++i)
-  {
-      digitalWrite(i, COMMON_LED_OFF);
-  }
-
-  for (int i = 0; i < 7; ++i)
-  {
-    if ((segmentMask & (1<<i)) != 0)
+    int segmentMask = DIGITS[number];
+    
+    for (int i = PIN_DIGIT_START; i <= PIN_DIGIT_END; ++i)
     {
-      digitalWrite(PIN_SEG_START + i, SEGMENT_LED_ON);
+        digitalWrite(i, COMMON_LED_OFF);
     }
-    else
-    {
-      digitalWrite(PIN_SEG_START + i, SEGMENT_LED_OFF);
-    }    
-  }
 
-  digitalWrite(PIN_DIGIT_START + digit, COMMON_LED_ON);
+    for (int i = 0; i < 7; ++i)
+    {
+        if ((segmentMask & (1<<i)) != 0)
+        {
+            digitalWrite(PIN_SEG_START + i, SEGMENT_LED_ON);
+        }
+        else
+        {
+            digitalWrite(PIN_SEG_START + i, SEGMENT_LED_OFF);
+        }    
+    }
+
+    digitalWrite(PIN_DIGIT_START + digit, COMMON_LED_ON);
 }
 
 
 void DisplayFrame(int frameCount)
 {
-  if (frameCount >= 10000)
-  {
-    DisplayOverflow();
-    return;
-  }
+    if (frameCount >= 10000)
+    {
+        DisplayOverflow();
+        return;
+    }
 
-  int digits[] = 
-  {
-    (int)(frameCount) % 10,
-    (int)((frameCount) / 10) % 10,
-    (int)((frameCount) / 100) % 10,
-    (int)((frameCount) / 1000) % 10
-  };
+    int digits[] = 
+    {
+        (int)(frameCount) % 10,
+        (int)((frameCount) / 10) % 10,
+        (int)((frameCount) / 100) % 10,
+        (int)((frameCount) / 1000) % 10
+    };
 
-  DisplayDigit(digits[0], 0);
-  delay(1);
+    DisplayDigit(digits[0], 0);
+    delay(1);
 
-  if (frameCount >= 10)
-  {
-    DisplayDigit(digits[1], 1);
-  }
-  else
-  {
-    DisplayDigit(NUMBER_BLANK, 1);
-  }
-  delay(1);
+    if (frameCount >= 10)
+    {
+        DisplayDigit(digits[1], 1);
+    }
+    else
+    {
+        DisplayDigit(NUMBER_BLANK, 1);
+    }
+    delay(1);
 
-  if (frameCount >= 100)
-  {
-    DisplayDigit(digits[2], 2);
-  }
-  else
-  {
-    DisplayDigit(NUMBER_BLANK, 2);
-  }
-  delay(1);
+    if (frameCount >= 100)
+    {
+        DisplayDigit(digits[2], 2);
+    }
+    else
+    {
+        DisplayDigit(NUMBER_BLANK, 2);
+    }
+    delay(1);
 
-  if (frameCount >= 1000)
-  {
-    DisplayDigit(digits[3], 3);
-  }
-  else
-  {
-    DisplayDigit(NUMBER_BLANK, 3);
-  }
-  delay(1);
+    if (frameCount >= 1000)
+    {
+        DisplayDigit(digits[3], 3);
+    }
+    else
+    {
+        DisplayDigit(NUMBER_BLANK, 3);
+    }
+    delay(1);
 }
 
 
 void DisplayOverflow()
 {
-  for (int i = 0; i < 4; ++i)
-  {
-    DisplayDigit(NUMBER_OVERFLOW, i);
-    delay(1);
-  }
+    for (int i = 0; i < 4; ++i)
+    {
+        DisplayDigit(NUMBER_OVERFLOW, i);
+        delay(1);
+    }
 }
 
 
 void loop() 
 {
-  DisplayFrame(m_FrameCount);
+    DisplayFrame(m_FrameCount);
+
+    int clockValue = digitalRead(PIN_CLOCK);
+    if (clockValue != m_ClockValue)
+    {
+        m_ClockValue = clockValue;
+
+        if (clockValue == HIGH)
+        {
+            OnClock();
+        }
+    }
 }
