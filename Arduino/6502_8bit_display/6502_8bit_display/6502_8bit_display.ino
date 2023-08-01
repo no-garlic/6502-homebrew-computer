@@ -121,8 +121,8 @@ void loop()
     int A6 = digitalRead(PIN_DATA_6);
     int A7 = digitalRead(PIN_DATA_7);
 
-    A1 = A4 = A5 = A7 = 0;
-    A2 = A3 = A6 = A0 = 1;
+    //A1 = A4 = A5 = A7 = 1;
+    //A2 = A3 = A6 = A0 = 0;
 
     int number = A0 + (A1 << 1) + (A2 << 2) + (A3 << 3) + (A4 << 4) + (A5 << 5) + (A6 << 6) + (A7 << 7);
     if (m_DisplayNumber != number)
