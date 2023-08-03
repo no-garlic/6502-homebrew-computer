@@ -1,6 +1,6 @@
 
 #define PIN_CLOCK 2
-#define PIN_RESET 3   // Interrupt 1
+#define PIN_RESET 3   // Interrupt 1 for Reset
 #define PIN_SEG_A 7
 #define PIN_SEG_B 8
 #define PIN_SEG_C 9
