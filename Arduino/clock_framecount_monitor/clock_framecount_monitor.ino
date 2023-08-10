@@ -50,10 +50,10 @@ int m_ClockValue = 0;
 
 
 // common cathode
-int SEGMENT_LED_ON  = LOW;
-int SEGMENT_LED_OFF = HIGH;
-int COMMON_LED_ON   = HIGH;
-int COMMON_LED_OFF  = LOW;
+int SEGMENT_LED_ON  = HIGH;
+int SEGMENT_LED_OFF = LOW;
+int COMMON_LED_ON   = LOW;
+int COMMON_LED_OFF  = HIGH;
 
 
 void setup() 

@@ -6,7 +6,9 @@ find_package(SDL2 REQUIRED)
 include_directories(imgui)
 
 file(GLOB IMGUI_SOURCES imgui/*.cpp)
-set(SOURCES source/main.cpp ${IMGUI_SOURCES})
+file(GLOB PROJECT_SOURCES source/*.cpp)
+set(SOURCES ${PROJECT_SOURCES} ${IMGUI_SOURCES})
+#set(SOURCES source/main.cpp ${IMGUI_SOURCES})
 
 add_executable(vcpkg_test ${SOURCES})
 target_link_libraries(vcpkg_test ${SDL2_LIBRARIES})
