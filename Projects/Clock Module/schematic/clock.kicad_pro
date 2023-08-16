@@ -312,6 +312,14 @@
       "version": 1
     },
     "net_format_name": "",
+    "ngspice": {
+      "fix_include_paths": true,
+      "meta": {
+        "version": 0
+      },
+      "model_mode": 0,
+      "workbook_filename": ""
+    },
     "page_layout_descr_file": "",
     "plot_directory": "",
     "spice_current_sheet_as_root": false,
@@ -326,6 +334,10 @@
     [
       "2443a44d-7077-4f22-9dfe-ab8f8af6a93f",
       ""
+    ],
+    [
+      "2f0f0318-4a09-4198-b2a4-ac61dc31c175",
+      "SelectorPanel"
     ]
   ],
   "text_variables": {}
